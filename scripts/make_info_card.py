@@ -30,6 +30,11 @@ def format_int(value):
     return f"{int(value):,}"
 
 
+def env_value(name):
+    value = os.environ.get(name)
+    return value.strip() if value and value.strip() else None
+
+
 def read_contribution_data():
     try:
         with open(CONTRIBUTIONS_PATH) as f:
@@ -82,13 +87,13 @@ try:
 except (OSError, json.JSONDecodeError, TypeError):
     REPO_COUNT = None
 
-GH_REPOS = os.environ.get("GH_STAT_REPOS") or format_int(REPO_COUNT or 42)
+GH_REPOS = env_value("GH_STAT_REPOS") or format_int(REPO_COUNT or 42)
 GH_CONTRIBS = (
-    os.environ.get("GH_STAT_CONTRIBS")
-    or os.environ.get("GH_STAT_COMMITS")
+    env_value("GH_STAT_CONTRIBS")
+    or env_value("GH_STAT_COMMITS")
     or format_int(contribution_stat("total_contributions"))
 )
-GH_ACTIVE_DAYS = os.environ.get("GH_STAT_ACTIVE_DAYS") or format_int(contribution_stat("active_days"))
+GH_LOC = env_value("GH_STAT_LOC") or "~250k"
 
 
 def calculate_age_formatted():
@@ -138,7 +143,7 @@ ROWS = [
     ("sec", "GitHub Stats"),
     ("kv", "Repos", f"{GH_REPOS} Total"),
     ("kv", "Contribs", f"{GH_CONTRIBS} (Past Year)"),
-    ("kv", "Active", f"{GH_ACTIVE_DAYS} days"),
+    ("kv", "LOC", f"{GH_LOC} lines"),
     ("gap",),
 ]
 

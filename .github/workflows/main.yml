@@ -30,6 +30,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GH_PROFILE_USER: Darpan-Maurya
+          GH_STAT_REPOS: ${{ vars.GH_STAT_REPOS }}
+          GH_STAT_LOC: ${{ vars.GH_STAT_LOC }}
           STATIC: "1"
         run: python scripts/update_assets.py
 
