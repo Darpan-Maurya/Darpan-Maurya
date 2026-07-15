@@ -30,17 +30,15 @@ def format_int(value):
     return f"{int(value):,}"
 
 
-def read_contribution_total():
+def read_contribution_data():
     try:
         with open(CONTRIBUTIONS_PATH) as f:
-            data = json.load(f)
-        return data.get("total_contributions")
+            return json.load(f)
     except (OSError, json.JSONDecodeError, TypeError):
-        return None
+        return {}
 
 
-def fetch_public_repo_count():
-    url = f"https://api.github.com/users/{USERNAME}"
+def github_request(url):
     headers = {
         "Accept": "application/vnd.github+json",
         "User-Agent": "profile-readme-bot/1.0",
@@ -48,18 +46,49 @@ def fetch_public_repo_count():
     token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
     if token:
         headers["Authorization"] = f"Bearer {token}"
-    try:
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            data = json.load(resp)
-        return data.get("public_repos")
-    except (OSError, json.JSONDecodeError, TypeError):
-        return None
+    req = urllib.request.Request(url, headers=headers)
+    with urllib.request.urlopen(req, timeout=20) as resp:
+        return json.load(resp), resp.headers
 
 
-GH_REPOS = os.environ.get("GH_STAT_REPOS") or format_int(fetch_public_repo_count() or 42)
-GH_CONTRIBS = os.environ.get("GH_STAT_COMMITS") or format_int(read_contribution_total() or 0)
-GH_LOC = os.environ.get("GH_STAT_LOC", "~250k")
+def fetch_repo_count():
+    token = os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    if token:
+        url = "https://api.github.com/user/repos?affiliation=owner&per_page=100&type=all"
+        count = 0
+        while url:
+            data, headers = github_request(url)
+            count += len(data)
+            link = headers.get("Link", "")
+            next_url = None
+            for part in link.split(","):
+                if 'rel="next"' in part:
+                    next_url = part[part.find("<") + 1:part.find(">")]
+                    break
+            url = next_url
+        return count
+
+    data, _ = github_request(f"https://api.github.com/users/{USERNAME}")
+    return data.get("public_repos")
+
+
+def contribution_stat(key, default=0):
+    return CONTRIBUTION_DATA.get(key, default)
+
+
+CONTRIBUTION_DATA = read_contribution_data()
+try:
+    REPO_COUNT = fetch_repo_count()
+except (OSError, json.JSONDecodeError, TypeError):
+    REPO_COUNT = None
+
+GH_REPOS = os.environ.get("GH_STAT_REPOS") or format_int(REPO_COUNT or 42)
+GH_CONTRIBS = (
+    os.environ.get("GH_STAT_CONTRIBS")
+    or os.environ.get("GH_STAT_COMMITS")
+    or format_int(contribution_stat("total_contributions"))
+)
+GH_ACTIVE_DAYS = os.environ.get("GH_STAT_ACTIVE_DAYS") or format_int(contribution_stat("active_days"))
 
 
 def calculate_age_formatted():
@@ -109,7 +138,7 @@ ROWS = [
     ("sec", "GitHub Stats"),
     ("kv", "Repos", f"{GH_REPOS} Total"),
     ("kv", "Contribs", f"{GH_CONTRIBS} (Past Year)"),
-    ("kv", "LOC", f"{GH_LOC} lines"),
+    ("kv", "Active", f"{GH_ACTIVE_DAYS} days"),
     ("gap",),
 ]
 
