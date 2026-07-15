@@ -18,7 +18,7 @@ def find_project_root():
 
 ROOT = find_project_root()
 OUT = os.environ.get("INFO_CARD_OUTPUT") or os.path.join(ROOT, "info-card.svg")
-STATIC = os.environ.get("STATIC", "").lower() in {"1", "true", "yes", "on"}
+STATIC = os.environ.get("STATIC", "1").lower() not in {"0", "false", "no", "off"}
 USERNAME = os.environ.get("GH_PROFILE_USER", "Darpan-Maurya")
 CONTRIBUTIONS_PATH = os.path.join(ROOT, "data", "contributions.json")
 
@@ -97,8 +97,8 @@ ROWS = [
     ("gap",),
     ("sec", "Contact"),
     ("kv", "Email", "darpanmaurya2003@gmail.com"),
-    ("kv", "Linkedin", "https://www.linkedin.com/in/darpan-maurya-822538262/"),
-    ("kv", "Portfolio", "https://portfolio-5dzp.onrender.com"),
+    ("kv", "Linkedin", "linkedin.com/in/darpan-maurya"),
+    ("kv", "Portfolio", "portfolio-5dzp.onrender.com"),
     ("gap",),
     ("sec", "Stack"),
     ("kv", "Frontend", "React, Next.js, TypeScript"),
