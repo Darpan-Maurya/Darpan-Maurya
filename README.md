@@ -17,7 +17,7 @@ I'm Darpan Maurya, a Computer Science undergraduate at IIIT Pune (Class of 2026)
 
 Alongside my CS degree I completed an ML Honours track and have spent time across research internships exploring problems where theory meets practice. I write performant software, train ML models, and chase research questions — happiest where mathematics, code, and curiosity meet.
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-Darpan-0d1117?style=for-the-badge&logo=vercel&logoColor=white)](https://portfolio-5dzp.onrender.com)
+[![Portfolio](https://img.shields.io/badge/Portfolio-Darpan-0d1117?style=for-the-badge&logo=vercel&logoColor=white)](https://portfolio-bice-pi-595lrgxhix.vercel.app)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Darpan-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/darpan-maurya-822538262/)
 
 <br>
